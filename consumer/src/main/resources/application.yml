@@ -9,16 +9,19 @@ spring:
     hibernate:
       ddl-auto: update
   kafka:
+    properties:
+      schema.registry.url: http://localhost:8081
+      specific.avro.reader: true
     consumer:
       group-id: consumers
       auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring:
-          json:
-            trusted:
-              packages: org.example.*,org.example.model.MonitorValueDTO
+      key-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+#      properties:
+#        spring:
+#          json:
+#            trusted:
+#              packages: org.example.*,org.example.model.MonitorValueDTO
       bootstrap-servers: localhost:29092
 server:
   port: 8080

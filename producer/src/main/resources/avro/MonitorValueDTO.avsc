@@ -1,0 +1,26 @@
+{
+  "namespace": "org.example.model",
+  "type": "record",
+  "name": "MonitorValueDTO",
+  "fields": [
+    {
+      "name": "monId",
+      "type": {
+        "type": "long",
+        "java-class": "java.lang.Long"
+      }
+    },
+    {
+      "name": "value",
+      "type": "string",
+      "avro.java.string": "String"
+    },
+    {
+      "name": "timestamp",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    }
+  ]
+}
