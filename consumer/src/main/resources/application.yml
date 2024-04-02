@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: consumer
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+  kafka:
+    consumer:
+      group-id: consumers
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: org.example.*,org.example.model.MonitorValueDTO
+      bootstrap-servers: localhost:29092
+server:
+  port: 8080
+  error:
+    include-message: always

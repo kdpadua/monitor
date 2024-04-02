@@ -1,0 +1,86 @@
+services:
+  ###################################################################
+  consumer:
+    build: 
+      context: ./consumer/target/
+      dockerfile_inline: |
+        FROM eclipse-temurin:17-jre-alpine
+        ADD consumer-1.0-SNAPSHOT.jar consumer.jar
+        EXPOSE 8080
+        ENTRYPOINT ["java","-jar","consumer.jar"]
+    container_name: consumer
+    depends_on:
+      - db
+      - kafka
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/postgres
+      - SPRING_KAFKA_CONSUMER_BOOTSTRAP_SERVERS=kafka:9092
+    ports:
+      - 8080:8080
+    networks:
+      - example
+  ###################################################################
+  producer:
+    build: 
+      context: ./producer/target/
+      dockerfile_inline: |
+        FROM eclipse-temurin:17-jre-alpine
+        ADD producer-1.0-SNAPSHOT.jar producer.jar
+        ENTRYPOINT ["java","-jar","producer.jar"]
+    container_name: producer
+    depends_on:
+      - kafka
+    environment:
+      - SPRING_KAFKA_PRODUCER_BOOTSTRAP_SERVERS=kafka:9092
+    networks:
+      - example      
+  ##################################################################  
+  db:
+    image: postgres
+    container_name: postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - '5432:5432'
+    volumes: 
+      - db:/var/lib/postgresql/data
+    networks:
+      - example
+  ##################################################################
+  kafka:
+    image: confluentinc/cp-kafka:7.4.4
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - 29092:29092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - example
+  ##################################################################
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.4
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 22181:2181
+    networks:
+      - example
+  ##################################################################
+volumes:
+  db:
+    driver: local
+networks:
+  example:
+    driver: bridge

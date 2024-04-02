@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: consumer
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE;MODE=PostgreSQL;NON_KEYWORDS=value
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+#  kafka:
+#    consumer:
+#      group-id: consumers
+#      auto-offset-reset: earliest
+#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+#      properties:
+#        spring:
+#          json:
+#            trusted:
+#              packages: org.example.*,org.example.model.MonitorValueDTO
+#      bootstrap-servers: localhost:29092
+#server:
+#  port: 8080
+#  error:
+#    include-message: always
