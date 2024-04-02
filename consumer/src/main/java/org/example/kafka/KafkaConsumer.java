@@ -12,8 +12,6 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
-import java.util.NoSuchElementException;
-
 @Service
 @EnableKafka
 public class KafkaConsumer {
@@ -26,10 +24,14 @@ public class KafkaConsumer {
     private MonitorService monitorService;
 
     @KafkaListener(topics = "MONITOR-DATA", groupId = "consumers")
-    public void consume(MonitorValueDTO value) {
-        Monitor mon = monitorService.findById(value.getMonId()).orElseThrow();
-        monitorValueService.save(new MonitorValue(value, mon));
-        LOGGER.info(String.format("Monitor data received. Timestamp: %s, Value: %s, Monitor: %s", value.getTimestamp(), value.getValue(), mon.getName()));
+    public void consume(MonitorValueDTO dto) {
+
+        monitorValueService.save(dtoToEntity(dto));
+        LOGGER.info(String.format("Monitor data received. Timestamp: %s, Value: %s", dto.getTimestamp(), dto.getValue()));
     }
 
+    private MonitorValue dtoToEntity(MonitorValueDTO dto) {
+        Monitor mon = monitorService.findById(dto.getMonId()).orElseThrow();
+        return new MonitorValue(mon, dto.getValue(), dto.getTimestamp());
+    }
 }

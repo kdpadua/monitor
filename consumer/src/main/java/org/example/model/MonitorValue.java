@@ -1,9 +1,7 @@
 package org.example.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Instant;
 
@@ -14,10 +12,10 @@ import java.time.Instant;
 @Table(name = "MONITOR_VALUE",schema="public")
 public class MonitorValue {
 
-    public MonitorValue(MonitorValueDTO val, Monitor mon) {
+    public MonitorValue(Monitor mon, String measurement, Instant timestamp) {
         this.mon = mon;
-        this.measurement = val.getValue();
-        this.timestamp = val.getTimestamp();
+        this.measurement = measurement;
+        this.timestamp = timestamp;
     }
 
     @Id
